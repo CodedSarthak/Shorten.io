@@ -1,5 +1,6 @@
 import Url from '../models/url.models.js'
 import Stats from '../models/stats.models.js'
+import User from '../models/user.models.js';
 
 import getNextCount from '../utils/counter.js'
 import { encodeBase62 } from '../utils/base62.js'
@@ -44,6 +45,7 @@ const shortenURL = async (req, res) => {
 }
 
 const redirectURL = async (req, res) => {
+
 
 }
 
