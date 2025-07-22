@@ -4,9 +4,10 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 import connectDB from './config/mongoClient.js';
+import connectRedis from './config/redisClient.js';
 
-import authRoutes from './routes/auth.routes.js';
-import urlRoutes from './routes/url.routes.js';
+//import authRoutes from './routes/auth.routes.js';
+//import urlRoutes from './routes/url.routes.js';
 
 const app = express();
 
@@ -17,13 +18,27 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
 
-connectDB();
 
-app.use('/api', authRoutes);
-app.use('/api', urlRoutes);
+
+// app.use('/api', authRoutes);
+// app.use('/api', urlRoutes);
 
 const PORT = process.env.PORT || 3000; 
-
-app.listen(PORT, () => {
-    console.log(`Server conntected on PORT : ${PORT}`)
-})
+(
+    async () => {
+        try 
+        {
+            await connectDB();
+            await connectRedis();
+    
+            app.listen(PORT, () => {
+            console.log(`Server conntected on PORT : ${PORT}`)
+            })
+        } 
+        catch (error) 
+        {
+            console.log("Error in starting server", error);
+            process.exit(1);
+        }
+    }
+)();
