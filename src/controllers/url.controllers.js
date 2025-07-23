@@ -5,6 +5,8 @@ import User from '../models/user.models.js';
 import getNextCount from '../utils/counter.js'
 import { encodeBase62 } from '../utils/base62.js'
 
+import { client } from '../config/redisClient.js';
+
 const shortenURL = async (req, res) => {
     
     try 
@@ -46,6 +48,37 @@ const shortenURL = async (req, res) => {
 
 const redirectURL = async (req, res) => {
 
+    const { ShortUrl } = req.params;
+
+    // Redis -> {shortUrl , longUrl}
+
+    try 
+    {
+        const cachedlongURL = await client.get(ShortUrl);
+
+        if (cachedlongURL)
+        {
+            return res.redirect(cachedlongURL);
+        }
+
+        const urlEntry = await Url.findOne({shortID : ShortUrl});
+
+        if (!urlEntry) 
+        {
+            return res.status(404).json({ error: "Short URL not found" });
+        }
+
+        //cache
+        await client.setEx(ShortUrl , 86400, urlEntry.longURL);
+
+        return res.redirect(urlEntry.longURL);
+
+    } 
+    catch (error) 
+    {
+        console.error("Error in redirectURL:", error);
+        return res.status(500).json({ error: "Server error" });
+    }
 
 }
 
