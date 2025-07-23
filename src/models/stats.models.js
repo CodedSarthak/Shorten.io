@@ -7,15 +7,22 @@ const StatsSchema = mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         unique : true
     },
-    timestamp: 
+    lastAccessed: 
     {
         type: Number,
         default: () => Date.now()  
     },
-    geo : 
+    geoDistribution: 
     {
-        type : String
-    }
+        type: Map,
+        of: Number,
+        default: {}
+    }, 
+    clicked : 
+    {
+        type  : Number,
+        default: 0
+    },
 },
 {timestamps : true})
 

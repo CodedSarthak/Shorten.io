@@ -52,9 +52,11 @@ const redirectURL = async (req, res) => {
 
     // Redis -> {shortUrl , longUrl}
 
+    const redisKey = `short:${ShortUrl}`;
+
     try 
     {
-        const cachedlongURL = await client.get(ShortUrl);
+        const cachedlongURL = await client.get(redisKey);
 
         if (cachedlongURL)
         {
@@ -69,7 +71,7 @@ const redirectURL = async (req, res) => {
         }
 
         //cache
-        await client.setEx(ShortUrl , 86400, urlEntry.longURL);
+        await client.setEx(redisKey , 86400, urlEntry.longURL); //TTL : 1d
 
         return res.redirect(urlEntry.longURL);
 
